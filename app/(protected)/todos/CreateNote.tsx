@@ -40,6 +40,7 @@ const CreateNote = () => {
   const [error, setError] = useState('')
   const hendelChange = useHandelChange(setInput)
   const queryClient = useQueryClient()
+  
   const { mutate, isPending } = useMutation({
     mutationFn: noteService.createNote,
     onSuccess: (data) => {

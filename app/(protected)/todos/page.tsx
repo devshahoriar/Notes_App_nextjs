@@ -12,10 +12,10 @@ import NoteCard, { NoteCardSkeleton } from './NoteCard'
 import TopBar from './TopBar'
 
 const NotePage = () => {
-  const { connected } = useSocketIo()
+  const { connected, socket } = useSocketIo()
 
   const queryClient = useQueryClient()
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['notes'],
     queryFn: noteService.getAllNotes,
   })
@@ -33,6 +33,10 @@ const NotePage = () => {
   const handleDeleteNote = (id: string) => {
     deleteTodo(id)
   }
+
+  socket.on('updateNote', () => {
+    refetch()
+  })
 
   return (
     <>
@@ -54,20 +58,26 @@ const NotePage = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {isLoading
-            ? new Array(5)
-                .fill(null)
-                .map((_, index) => <NoteCardSkeleton key={index} />)
-            : notes.map((note) => (
-                <NoteCard
-                  isEditing
-                  editorName="SHuvo"
-                  key={note._id}
-                  note={note}
-                  onEdit={handleEditNote}
-                  onDelete={handleDeleteNote}
-                />
-              ))}
+          {isLoading ? (
+            new Array(5)
+              .fill(null)
+              .map((_, index) => <NoteCardSkeleton key={index} />)
+          ) : notes.length === 0 ? (
+            <div className="flex items-center justify-center h-[50vh]">
+              <p className="text-gray-500 dark:text-gray-400">
+                No notes found. Create a new note.
+              </p>
+            </div>
+          ) : (
+            notes.map((note) => (
+              <NoteCard
+                key={note._id}
+                note={note}
+                onEdit={handleEditNote}
+                onDelete={handleDeleteNote}
+              />
+            ))
+          )}
         </div>
       </div>
     </>
