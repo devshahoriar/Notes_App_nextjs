@@ -5,6 +5,7 @@ export interface Note {
   _id: string
   title: string
   content: string
+  editorName?: string
   authorId: {
     _id: string
     name: string
@@ -60,12 +61,6 @@ const noteService = {
       withCredentials: true,
     })
   },
-
-  connectedPeople : async (): Promise<any> => {
-    return transporter.get<NoteResponse, NoteResponse>(`/note/activeUsers`, {
-      withCredentials: true,
-    })
-  }
 }
 
 export default noteService

@@ -14,41 +14,40 @@ import {
 } from '@/components/ui/credenza'
 import useSocketIo from '@/hooks/UseSocketIo'
 import { AuthResponse } from '@/services/authService'
-import noteService from '@/services/noteService'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 
 const ConnectEdPeople = () => {
   const [open, setOpen] = useState(false)
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['connectedPeople'],
-    queryFn: noteService.connectedPeople,
-    retry: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-  })
-
   const { socket } = useSocketIo()
   const queryClient = useQueryClient()
   const { _id } = queryClient.getQueryData(['user']) as AuthResponse
-  const people = data?.users?.filter((user: any) => user.userId !== _id)
+  const [people, setPeople] = useState<Array<AuthResponse>>()
 
-  socket.on('updateUser', () => {
-    refetch()
+  useEffect(() => {
+    socket?.on('updateUser', (ndata) => {
+      setPeople([...ndata?.filter((user: any) => user.userId !== _id)])
+    })
+
+    return () => {
+      socket?.off('updateUser')
+    }
   })
 
   return (
     <Credenza open={open} onOpenChange={setOpen}>
       <CredenzaTrigger asChild>
         <button className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:underline">
-          {isLoading ? 'Loading..' : `Connected ${people?.length} people`}
+          {`Connected ${people?.length ? people.length : 0} people`}
         </button>
       </CredenzaTrigger>
       <CredenzaContent>
         <CredenzaHeader>
           <CredenzaTitle>Connected people</CredenzaTitle>
-          <CredenzaDescription>{people?.length} people</CredenzaDescription>
+          <CredenzaDescription>
+            {people?.length ? people.length : 0} people
+          </CredenzaDescription>
         </CredenzaHeader>
         <CredenzaBody className="space-y-4">
           {people?.map((person: any) => (

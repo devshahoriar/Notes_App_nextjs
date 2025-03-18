@@ -54,14 +54,14 @@ const EditNote = ({
       setOpen(true)
       setActivNoteId(nodeId)
       setTimeout(() => {
-        socket.emit('startEditNote', nodeId)
+        socket?.emit('startEditNote', nodeId)
       })
     } else {
       if (activNoteId) {
-        socket.emit('endEditNote', activNoteId)
+        socket?.emit('endEditNote', activNoteId)
       }
     }
-  }, [nodeId])
+  }, [activNoteId, nodeId, socket])
 
   const { mutate, isPending } = useMutation({
     mutationFn: noteService.updateNote,

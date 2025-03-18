@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import useSocketIo from '@/hooks/UseSocketIo'
 import authService from '@/services/authService'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
@@ -19,11 +20,13 @@ const UserAvaterCrontrol = () => {
     retry: false,
   })
   const router = useRouter()
+  const { socket } = useSocketIo()
 
   const { mutate, isPending } = useMutation({
     mutationFn: authService.logout,
     onSuccess() {
       router.replace('/login')
+      socket?.close()
     },
   })
 

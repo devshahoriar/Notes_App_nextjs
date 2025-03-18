@@ -1,31 +1,20 @@
-import useSocketIo from '@/hooks/UseSocketIo'
 import { AuthResponse } from '@/services/authService'
 import { Note } from '@/services/noteService'
 import { useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { PencilIcon, TrashIcon } from 'lucide-react'
-import { useState } from 'react'
 
 interface NoteCardProps {
   note: Note
   onEdit?: (id: string) => void
   onDelete?: (id: string) => void
+  editorName?: string
 }
 
-const NoteCard = ({ note, onEdit, onDelete }: NoteCardProps) => {
+const NoteCard = ({ note, onEdit, onDelete, editorName }: NoteCardProps) => {
   const queryClient = useQueryClient()
   const { _id } = queryClient.getQueryData(['user']) as AuthResponse
   const formattedDate = format(new Date(note.updatedAt), 'hh:mm - dd/MM/yyyy')
-  const { socket } = useSocketIo()
-  const [editorName, setEditorName] = useState<string | null>(null)
-  socket.on('noteEdit', (data) => {
-    if (data.nodeId === note._id && data?.start) {
-      setEditorName(data.user)
-    }
-    if (data.nodeId === note._id && data?.end) {
-      setEditorName(null)
-    }
-  })
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 dark:border-gray-700 relative group">
