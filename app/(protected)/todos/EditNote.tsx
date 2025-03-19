@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea'
 import useHandelChange from '@/hooks/useHandelChange'
 import useSocketIo from '@/hooks/UseSocketIo'
 import { validateError } from '@/lib/utils'
+import { AuthResponse } from '@/services/authService'
 import noteService from '@/services/noteService'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -48,17 +49,19 @@ const EditNote = ({
   const queryClient = useQueryClient()
   const { socket } = useSocketIo()
   const [activNoteId, setActivNoteId] = useState<string | null>(null)
+   const { name } = queryClient.getQueryData(['user']) as AuthResponse
 
   useEffect(() => {
     if (nodeId) {
       setOpen(true)
       setActivNoteId(nodeId)
+   
       setTimeout(() => {
-        socket?.emit('startEditNote', nodeId)
+        socket?.emit('startEditNote', {noteId: nodeId, user: name})
       })
     } else {
       if (activNoteId) {
-        socket?.emit('endEditNote', activNoteId)
+        socket?.emit('endEditNote', {noteId: activNoteId, user: name})
       }
     }
   }, [activNoteId, nodeId, socket])

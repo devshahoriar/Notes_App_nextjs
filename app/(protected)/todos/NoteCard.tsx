@@ -15,7 +15,6 @@ const NoteCard = ({ note, onEdit, onDelete, editorName }: NoteCardProps) => {
   const queryClient = useQueryClient()
   const { _id } = queryClient.getQueryData(['user']) as AuthResponse
   const formattedDate = format(new Date(note.updatedAt), 'hh:mm - dd/MM/yyyy')
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 dark:border-gray-700 relative group">
       {editorName && (
@@ -30,15 +29,15 @@ const NoteCard = ({ note, onEdit, onDelete, editorName }: NoteCardProps) => {
       {!editorName && (
         <div className="absolute top-3 right-3 flex space-x-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
           <button
-            onClick={() => onEdit?.(note._id)}
+            onClick={() => onEdit?.(note?._id)}
             className="p-1.5 rounded-full bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-600 dark:text-blue-400"
             aria-label="Edit note"
           >
             <PencilIcon className="w-3.5 h-3.5" />
           </button>
-          {_id === note.authorId._id && (
+          {_id === note?.authorId?._id && (
             <button
-              onClick={() => onDelete?.(note._id)}
+              onClick={() => onDelete?.(note?._id)}
               className="p-1.5 rounded-full bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400"
               aria-label="Delete note"
             >
@@ -55,7 +54,7 @@ const NoteCard = ({ note, onEdit, onDelete, editorName }: NoteCardProps) => {
         {note.content}
       </p>
       <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-        <span>{note.authorId.name}</span>
+        <span>{note?.authorId?.name}</span>
         <span>{formattedDate}</span>
       </div>
     </div>

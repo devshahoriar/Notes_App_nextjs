@@ -61,6 +61,7 @@ const NotePage = () => {
 
     socket?.on('noteEdit', (data: EditSocketEventType) => {
       const { user, nodeId } = data
+      console.log(data)
       if (data?.start) {
         const newNotes = notes?.map((n) => {
           if (n._id === nodeId) {
